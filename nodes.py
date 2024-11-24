@@ -3,12 +3,13 @@ import base64
 import io
 from PIL import Image
 from easy_nodes import ComfyNode, StringInput, NumberInput, Choice, ImageTensor
+import os
 
 list_of_things = []
 
 
 @ComfyNode()
-def send_image_to_endpoint(
+def joy_caption_alpha_two(
     image: ImageTensor,
     caption_type: str = Choice(
         [
@@ -44,16 +45,16 @@ def send_image_to_endpoint(
     extra_no_ambiguous: bool = True,
     extra_content_rating: bool = True,
     extra_most_important: bool = True,
-    name: str = StringInput(""),
-    custom_prompt: str = StringInput(""),
-    max_tokens: int = NumberInput(300, 0, 1000, step=1),
     top_p: float = NumberInput(
         0.9, 0, 1, step=0.01
     ),
     temperature: float = NumberInput(
         0.6, 0, 2, step=0.1
     ),
-    endpoint: str = StringInput("API Endpoint"),
+    max_tokens: int = NumberInput(300, 0, 1000, step=1),
+    name: str = StringInput(""),
+    custom_prompt: str = StringInput(""),
+    endpoint: str = StringInput("https://api.runpod.ai/v2/o3zqyk47x7vodl/runsync"),
 ) -> str:
     extras = []
     if extra_person_character:
@@ -133,7 +134,7 @@ def send_image_to_endpoint(
     response = requests.post(
         endpoint,
         headers={
-            "Authorization": f"Bearer",
+            "Authorization": f"Bearer {os.environ['RUNPOD_API_KEY']}",
             "Content-Type": "application/json",
         },
         json=payload,
