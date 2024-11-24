@@ -41,7 +41,7 @@ def send_image_to_endpoint(
         0.6, 0, 2, step=0.1, display="Temperature (creativity)"
     ),
     endpoint: str = StringInput("API Endpoint"),
-) -> dict:
+) -> str:
     """
     Send image and parameters to the endpoint and return the response.
     """
@@ -66,4 +66,5 @@ def send_image_to_endpoint(
             "temperature": temperature,
         }
     }
-    return {}
+    
+    return "fuck you"
