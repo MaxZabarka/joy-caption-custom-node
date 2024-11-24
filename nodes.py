@@ -29,7 +29,7 @@ def send_image_to_endpoint(
     caption_type: str = Choice(["Descriptive", "Analytical", "Creative"]),
     caption_length: str = Choice(["short", "medium", "long"]),
     extras: list[str] = [
-        Choice(["False", "True"], display=description) for description in EXTRAS_OPTIONS
+        Choice(["False", "True"]) for description in EXTRAS_OPTIONS
     ],
     name: str = StringInput("Enter a name if applicable", default=""),
     custom_prompt: str = StringInput("Enter a custom prompt", default=""),
