@@ -107,7 +107,7 @@ def send_image_to_endpoint(
     if extra_most_important:
         extras.append("ONLY describe the most important elements of the image.")
 
-    pil_image = Image.fromarray(image.numpy(), mode="RGB")
+    pil_image = Image.fromarray(image[0].numpy(), mode="RGB")
 
     buffer = io.BytesIO()
     pil_image.save(buffer, format="PNG")
