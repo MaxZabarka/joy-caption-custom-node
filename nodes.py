@@ -1,4 +1,5 @@
 import requests
+import time
 import numpy as np
 import base64
 import io
@@ -6,7 +7,11 @@ from PIL import Image
 from easy_nodes import ComfyNode, StringInput, NumberInput, Choice, ImageTensor
 import os
 
-list_of_things = []
+
+headers = {
+    "Authorization": f"Bearer {os.environ['RUNPOD_API_KEY']}",
+    "Content-Type": "application/json",
+}
 
 
 @ComfyNode()
@@ -46,16 +51,12 @@ def joy_caption_alpha_two(
     extra_no_ambiguous: bool = True,
     extra_content_rating: bool = True,
     extra_most_important: bool = True,
-    top_p: float = NumberInput(
-        0.9, 0, 1, step=0.01
-    ),
-    temperature: float = NumberInput(
-        0.6, 0, 2, step=0.1
-    ),
+    top_p: float = NumberInput(0.9, 0, 1, step=0.01),
+    temperature: float = NumberInput(0.6, 0, 2, step=0.1),
     max_tokens: int = NumberInput(300, 0, 1000, step=1),
     name: str = StringInput(""),
     custom_prompt: str = StringInput(""),
-    endpoint: str = StringInput("https://api.runpod.ai/v2/4mw06685te9vzh/runsync"),
+    endpoint: str = StringInput("https://api.runpod.ai/v2/4mw06685te9vzh"),
 ) -> str:
     extras = []
     if extra_person_character:
@@ -147,12 +148,21 @@ def joy_caption_alpha_two(
     }
 
     response = requests.post(
-        endpoint,
-        headers={
-            "Authorization": f"Bearer {os.environ['RUNPOD_API_KEY']}",
-            "Content-Type": "application/json",
-        },
+        endpoint + "/run",
+        headers=headers,
         json=payload,
     )
+
+    print(response.text)
     response.raise_for_status()
-    return response.text
+    response = response.json()
+    id = response["id"]
+
+    while response["status"] == "IN_PROGRESS" or response["status"] == "IN_QUEUE":
+        time.sleep(1)
+        response = requests.get(endpoint + "/status/" + id, headers=headers).json()
+        print(response)
+
+    response = response.json()
+    response = response["output"]["output"]
+    return response
