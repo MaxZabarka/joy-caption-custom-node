@@ -163,6 +163,5 @@ def joy_caption_alpha_two(
         response = requests.get(endpoint + "/status/" + id, headers=headers).json()
         print(response)
 
-    response = response.json()
     response = response["output"]["output"]
     return response
