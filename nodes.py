@@ -109,6 +109,8 @@ def joy_caption_alpha_two(
     if extra_most_important:
         extras.append("ONLY describe the most important elements of the image.")
 
+    image = image[0]
+
     if len(image.shape) == 2:
         image = image.unsqueeze(-1)
 
