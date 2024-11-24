@@ -112,6 +112,9 @@ def joy_caption_alpha_two(
 
     buffer = io.BytesIO()
     pil_image.save(buffer, format="PNG")
+
+    pil_image.save("test.png")
+
     buffer.seek(0)
 
     base64_image = base64.b64encode(buffer.read()).decode("utf-8")
