@@ -31,16 +31,16 @@ def send_image_to_endpoint(
     extras: list[str] = [
         Choice(["False", "True"]) for description in EXTRAS_OPTIONS
     ],
-    name: str = StringInput("Enter a name if applicable", default=""),
-    custom_prompt: str = StringInput("Enter a custom prompt", default=""),
-    max_tokens: int = NumberInput(300, 50, 1000, step=50, display="Max tokens"),
+    name: str = StringInput("Enter a name if applicable"),
+    custom_prompt: str = StringInput("Enter a custom prompt"),
+    max_tokens: int = NumberInput(300, 0, 1000),
     top_p: float = NumberInput(
         0.9, 0, 1, step=0.01, display="Top P (nucleus sampling)"
     ),
     temperature: float = NumberInput(
         0.6, 0, 2, step=0.1, display="Temperature (creativity)"
     ),
-    endpoint: str = StringInput("API Endpoint", default="https://example.com/api"),
+    endpoint: str = StringInput("API Endpoint"),
 ) -> dict:
     """
     Send image and parameters to the endpoint and return the response.
