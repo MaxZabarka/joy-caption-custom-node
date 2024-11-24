@@ -1,5 +1,5 @@
 import requests
-from easy_nodes import ComfyNode, StringInput, NumberInput, Choice, BoolInput
+from easy_nodes import ComfyNode, StringInput, NumberInput, Choice
 
 # Define the list of all extras as a constant
 EXTRAS_OPTIONS = [
@@ -27,8 +27,8 @@ def send_image_to_endpoint(
     base64_image: str = StringInput("Base64 encoded image data"),
     caption_type: str = Choice(["Descriptive", "Analytical", "Creative"], default="Descriptive"),
     caption_length: str = Choice(["short", "medium", "long"], default="long"),
-    extras: list[bool] = [
-        BoolInput(description, default=False) for description in EXTRAS_OPTIONS
+    extras: list[str] = [
+        Choice(["False", "True"], default="False", display=description) for description in EXTRAS_OPTIONS
     ],
     name: str = StringInput("Enter a name if applicable", default=""),
     custom_prompt: str = StringInput("Enter a custom prompt", default=""),
@@ -43,11 +43,10 @@ def send_image_to_endpoint(
     # Prepare the extras field by filtering enabled options
     enabled_extras = [
         description
-        for enabled, description in zip(
-            [extra[0] for extra in extras],  # Extract the values of the booleans
-            EXTRAS_OPTIONS,
+        for choice, description in zip(
+            extras, EXTRAS_OPTIONS
         )
-        if enabled
+        if choice == "True"
     ]
 
     # Prepare the payload
@@ -64,5 +63,5 @@ def send_image_to_endpoint(
             "temperature": temperature,
         }
     }
-
     return {}
+
