@@ -22,20 +22,25 @@ EXTRAS_OPTIONS = [
     "ONLY describe the most important elements of the image.",
 ]
 
+
 @ComfyNode()
 def send_image_to_endpoint(
     base64_image: str = StringInput("Base64 encoded image data"),
-    caption_type: str = Choice(["Descriptive", "Analytical", "Creative"], default="Descriptive"),
-    caption_length: str = Choice(["short", "medium", "long"], default="long"),
+    caption_type: str = Choice(["Descriptive", "Analytical", "Creative"]),
+    caption_length: str = Choice(["short", "medium", "long"]),
     extras: list[str] = [
-        Choice(["False", "True"], default="False", display=description) for description in EXTRAS_OPTIONS
+        Choice(["False", "True"], display=description) for description in EXTRAS_OPTIONS
     ],
     name: str = StringInput("Enter a name if applicable", default=""),
     custom_prompt: str = StringInput("Enter a custom prompt", default=""),
     max_tokens: int = NumberInput(300, 50, 1000, step=50, display="Max tokens"),
-    top_p: float = NumberInput(0.9, 0, 1, step=0.01, display="Top P (nucleus sampling)"),
-    temperature: float = NumberInput(0.6, 0, 2, step=0.1, display="Temperature (creativity)"),
-    endpoint: str = StringInput("API Endpoint", default="https://example.com/api")
+    top_p: float = NumberInput(
+        0.9, 0, 1, step=0.01, display="Top P (nucleus sampling)"
+    ),
+    temperature: float = NumberInput(
+        0.6, 0, 2, step=0.1, display="Temperature (creativity)"
+    ),
+    endpoint: str = StringInput("API Endpoint", default="https://example.com/api"),
 ) -> dict:
     """
     Send image and parameters to the endpoint and return the response.
@@ -43,9 +48,7 @@ def send_image_to_endpoint(
     # Prepare the extras field by filtering enabled options
     enabled_extras = [
         description
-        for choice, description in zip(
-            extras, EXTRAS_OPTIONS
-        )
+        for choice, description in zip(extras, EXTRAS_OPTIONS)
         if choice == "True"
     ]
 
@@ -64,4 +67,3 @@ def send_image_to_endpoint(
         }
     }
     return {}
-
