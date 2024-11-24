@@ -1,4 +1,5 @@
 import requests
+import numpy as np
 import base64
 import io
 from PIL import Image
@@ -13,8 +14,8 @@ def joy_caption_alpha_two(
     image: ImageTensor,
     caption_type: str = Choice(
         [
-            "Descriptive (Informal)",
             "Descriptive",
+            "Descriptive (Informal)",
             "Training Prompt",
             "MidJourney",
             "Booru tag list",
@@ -108,7 +109,16 @@ def joy_caption_alpha_two(
     if extra_most_important:
         extras.append("ONLY describe the most important elements of the image.")
 
-    pil_image = Image.fromarray(image[0].numpy(), mode="RGB")
+    if len(image.shape) == 2:
+        image = image.unsqueeze(-1)
+
+    if image.shape[-1] == 1:
+        image = torch.cat([image] * 3, axis=-1)
+
+    image = image.cpu().numpy()
+
+    pil_image = Image.fromarray(np.clip(image * 255.0, 0, 255).astype(np.uint8))
+    # pil_image = Image.fromarray(image[0].numpy(), mode="RGB")
 
     buffer = io.BytesIO()
     pil_image.save(buffer, format="PNG")
