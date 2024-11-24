@@ -54,7 +54,7 @@ def joy_caption_alpha_two(
     max_tokens: int = NumberInput(300, 0, 1000, step=1),
     name: str = StringInput(""),
     custom_prompt: str = StringInput(""),
-    endpoint: str = StringInput("https://api.runpod.ai/v2/o3zqyk47x7vodl/runsync"),
+    endpoint: str = StringInput("https://api.runpod.ai/v2/4mw06685te9vzh/runsync"),
 ) -> str:
     extras = []
     if extra_person_character:
