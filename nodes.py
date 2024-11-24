@@ -135,7 +135,7 @@ def joy_caption_alpha_two(
 
     payload = {
         "input": {
-            "base64_image": base64_image,
+            "images": [base64_image],
             "caption_type": caption_type,
             "caption_length": caption_length,
             "extras": extras,
