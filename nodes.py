@@ -6,7 +6,8 @@ import io
 from PIL import Image
 from easy_nodes import ComfyNode, StringInput, NumberInput, Choice, ImageTensor
 import os
-
+import tensorflow as tf
+from torchvision import transforms
 
 headers = {
     "Authorization": f"Bearer {os.environ['RUNPOD_API_KEY']}",
@@ -17,19 +18,17 @@ headers = {
 @ComfyNode()
 def joy_caption_alpha_two(
     image: ImageTensor,
-    caption_type: str = Choice(
-        [
-            "Descriptive",
-            "Descriptive (Informal)",
-            "Training Prompt",
-            "MidJourney",
-            "Booru tag list",
-            "Booru-like tag list",
-            "Art Critic",
-            "Product Listing",
-            "Social Media Post",
-        ]
-    ),
+    caption_type: str = Choice([
+        "Descriptive",
+        "Descriptive (Informal)",
+        "Training Prompt",
+        "MidJourney",
+        "Booru tag list",
+        "Booru-like tag list",
+        "Art Critic",
+        "Product Listing",
+        "Social Media Post",
+    ]),
     caption_length: str = Choice(
         ["any", "very short", "short", "medium-length", "long", "very long"]
         + [str(i) for i in range(20, 261, 10)]
@@ -165,3 +164,74 @@ def joy_caption_alpha_two(
 
     response = response["output"]["output"]
     return response
+
+
+@ComfyNode()
+def openrouter_caption(
+    image: ImageTensor,
+    prompt: str = StringInput(""),
+    model: str = StringInput(""),
+    api_key: str = StringInput(""),
+) -> str:
+    # Initialize the `content` array
+    content = [{"type": "text", "text": prompt}]  # Always include the prompt text
+    print(type(image))
+    # If `B` (image) is provided, encode it as base64 and add to `content`
+    if image is not None:
+        image = image[0]
+        print(image.shape)
+        to_pil = transforms.ToPILImage()
+        image = image.permute(2, 0, 1)
+        image = to_pil(image)
+
+        # np_array = B.to_pil_image()
+
+        # Convert NumPy array to a PNG image in memory
+        #  image = Image.fromarray(np_array)
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        # Encode PNG to Base64
+        base64_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        buffer.close()
+        print(len(base64_data))
+
+        # Create Base64 Image URL
+        image_base64 = f"{base64_data}"
+        # Add the image content as `image_url`
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:image/png;base64,{image_base64}"},
+        })
+
+    # Prepare the message
+    message = {
+        "role": "user",
+        "content": content,  # Array of text and optional image
+    }
+
+    # Prepare the payload
+    payload = {
+        "model": model,
+        "messages": [message],  # Always a single message
+    }
+    print(payload)
+
+    # Send the request
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions", json=payload, headers=headers
+    )
+    print(response)
+
+    response.raise_for_status()  # Raise error for non-2xx responses
+    print(response.text)
+
+    response = response.json()["choices"][0]["message"]["content"]
+    return response
+
