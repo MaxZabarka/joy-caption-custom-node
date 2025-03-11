@@ -1,10 +1,15 @@
 [project]
 name = "maxz-custom-nodes"
+description = "Custom nodes for ComfyUI, depending on EasyNodes."
 version = "0.1.0"
-description = "Custom ComfyUI nodes by maxz"
-authors = [
-    { name = "maxz" }
-]
-dependencies = [
-    "ComfyUI-EasyNodes"
-]
+license = { file = "LICENSE.txt" }
+dependencies = ["ComfyUI-EasyNodes"]
+
+[project.urls]
+Repository = "https://github.com/MaxZabarka/joy-caption-custom-node"
+# Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "MaxZabarka"
+DisplayName = "MaxZ Custom Nodes"
+Icon = ""
